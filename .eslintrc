@@ -1,3 +1,6 @@
+env:
+  browser: true
+
 rules:
   quotes: [2, 'single']
   eqeqeq: [2, 'smart']

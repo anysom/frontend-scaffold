@@ -95,10 +95,10 @@ gulp.task('javascript:main', function() {
     gulp.src(mapJSON)
         .pipe(jshint())
         .pipe(jshint.reporter('default'))
-        .pipe(eslint())
+        /*.pipe(eslint())
         .pipe(eslint.format())
         .pipe(eslint.failOnError())
-        .on('error', handleError)
+        .on('error', handleError)*/
         .pipe(sourcemaps.init())
         .pipe(concat('main.min.js'))
         //.pipe(ngAnnotate()) /*include this line only if using angular*/
@@ -157,27 +157,31 @@ gulp.task('sass', function () {
 
 
 //__________________STYLEGUIDE______________________//
-gulp.task('styleguide', ['styleguide:generate', 'styleguide:applystyles']);
-
-gulp.task('styleguide:generate', function() {
-  return gulp.src(settings.stylesDir + '**/*.scss')
-    .pipe(styleguide.generate({
-        title: 'Dwarf Styleguide',
-        server: true,
-        rootPath: settings.baseDir + 'styleguide',
-        overviewPath: 'README.md'
-      }))
-    .pipe(gulp.dest(settings.baseDir + 'styleguide'));
+//gulp.task('styleguide', ['styleguide:generate', 'styleguide:applystyles']);
+gulp.task('styleguide', function() {
+  
 });
 
-gulp.task('styleguide:applystyles', function() {
-  return gulp.src(settings.stylesDir+settings.mainSassFile)
-    .pipe(sass({
-      errLogToConsole: true
-    }))
-    .pipe(styleguide.applyStyles())
-    .pipe(gulp.dest(settings.baseDir + 'styleguide'));
-});
+//
+//gulp.task('styleguide:generate', function() {
+//  return gulp.src(settings.stylesDir + '**/*.scss')
+//    .pipe(styleguide.generate({
+//        title: 'Dwarf Styleguide',
+//        server: true,
+//        rootPath: settings.baseDir + 'styleguide',
+//        overviewPath: 'README.md'
+//      }))
+//    .pipe(gulp.dest(settings.baseDir + 'styleguide'));
+//});
+//
+//gulp.task('styleguide:applystyles', function() {
+//  return gulp.src(settings.stylesDir+settings.mainSassFile)
+//    .pipe(sass({
+//      errLogToConsole: true
+//    }))
+//    .pipe(styleguide.applyStyles())
+//    .pipe(gulp.dest(settings.baseDir + 'styleguide'));
+//});
 
 /********************************************************/
 /* Gulp Tasks */
