@@ -1,0 +1,19 @@
+// Buttons
+//
+// Buttons can and should be clicked.
+//
+// markup: <button class="button {$modifiers}">
+//
+// :hover - Highlight the button when hovered.
+//
+// Styleguide 1.1
+.button {
+  background: red;
+  border-radius: 5px;
+  border: 1px solid black;
+  color: white;
+
+  &:hover {
+    background: #ccc;
+  }
+}
