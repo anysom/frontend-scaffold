@@ -1,0 +1,17 @@
+.link {
+  color: white;
+  font-size: 19px;
+
+  &:hover {
+    color: $color-lime;
+  };
+}
+
+.label-linker {
+  font-size: 16px;
+  text-decoration: underline;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

@@ -127,18 +127,6 @@ gulp.task('javscript:vendor', function() {
 
 
 //__________________STYLESHEETS______________________//
-/*
-gulp.task('less', function () {
-    gulp.src(settings.stylesDir+settings.mainLessFile)
-        .pipe(sourcemaps.init())
-        .pipe(less())
-        .on('error', handleError)
-        .pipe(minifyCSS())
-        .pipe(rename('main.min.css'))
-        .pipe(gulp.dest(settings.stylesDir))
-        .pipe(reload({stream: true}));
-});*/
-
 gulp.task('sass', function () {
     gulp.src(settings.stylesDir+settings.mainSassFile)
         .pipe(sourcemaps.init())
@@ -157,31 +145,32 @@ gulp.task('sass', function () {
 
 
 //__________________STYLEGUIDE______________________//
-//gulp.task('styleguide', ['styleguide:generate', 'styleguide:applystyles']);
-gulp.task('styleguide', function() {
-  
+var styleguideTmpPath = '/styleguide';
+var scssWild = settings.stylesDir + '/**/*.scss';
+var scssRoot = settings.stylesDir + '/main.scss';
+
+
+gulp.task('styleguide:generate', function() {
+  return gulp.src(scssWild)
+    .pipe(styleguide.generate({
+        title: 'My First Development Styleguide',
+        server: true,
+        rootPath: styleguideTmpPath//,
+        //overviewPath: overviewPath
+      }))
+    .pipe(gulp.dest(styleguideTmpPath));
 });
 
-//
-//gulp.task('styleguide:generate', function() {
-//  return gulp.src(settings.stylesDir + '**/*.scss')
-//    .pipe(styleguide.generate({
-//        title: 'Dwarf Styleguide',
-//        server: true,
-//        rootPath: settings.baseDir + 'styleguide',
-//        overviewPath: 'README.md'
-//      }))
-//    .pipe(gulp.dest(settings.baseDir + 'styleguide'));
-//});
-//
-//gulp.task('styleguide:applystyles', function() {
-//  return gulp.src(settings.stylesDir+settings.mainSassFile)
-//    .pipe(sass({
-//      errLogToConsole: true
-//    }))
-//    .pipe(styleguide.applyStyles())
-//    .pipe(gulp.dest(settings.baseDir + 'styleguide'));
-//});
+gulp.task('styleguide:applystyles', function() {
+  return gulp.src(scssRoot)
+    .pipe(sass({
+      errLogToConsole: true
+    }))
+    .pipe(styleguide.applyStyles())
+    .pipe(gulp.dest(styleguideTmpPath));
+});
+
+gulp.task('styleguide', ['styleguide:generate', 'styleguide:applystyles']);
 
 /********************************************************/
 /* Gulp Tasks */

@@ -1,0 +1,65 @@
+p, a, button, strong, em {
+  font-size: 16px;
+  line-height: 21px;
+  color: white;
+  font-family: 'Dispatch Cond', sans-serif;
+
+  @media (min-width: $small) {
+    font-size: 18px;
+    line-height: 23px;
+  }
+}
+
+a {
+  text-decoration: none;
+  &.clickable {
+    opacity: 0;
+    width: 100% !important;
+    height: 100%;
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: transparent;
+    z-index: 105;
+    padding: 0 !important;
+  }
+  &.green {
+    background-color: $color-lime;
+    color: white;
+  }
+}
+
+p, a, button, strong, em, h1, h2, h3, legend {
+  &.color-main {
+    color: $color-lime;
+  }
+}
+
+h1, h2, h3 {
+  margin: 0;
+  line-height: 1.2;
+  color: white;
+}
+
+h3 {
+  font-size: 20px;
+}
+
+h2, legend {
+  font-size: 24px;
+  font-weight: 700;
+
+  @media (min-width: $small) {
+    font-size: 28px;
+  }
+}
+
+h1 {
+  font-size: 36px;
+}
+
+small {
+  display: block;
+}

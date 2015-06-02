@@ -1,0 +1,34 @@
+// A spot for highlighting content
+//
+// The spot will be used to linking to content by displaying and image, a header and a short copy.
+//
+// default - a normal button
+// .spot-example--rounded - with rounded corners
+// .spot-example--aggressive - for cool angry colors
+//
+// markup:
+// <a class="spot-example {$modifiers}">
+//  <img class="spot-example__img" src="http://lorempixel.com/300/200/">
+//  <h3>This is the header</h3>
+//  <p>And a short description</p>
+// </a>
+//
+// Styleguide 2.1
+
+.spot-example {
+  border: 1px solid black;
+  display: inline-block;
+}
+
+.spot-example--rounded {
+  border-radius: 10px;
+}
+
+.spot-example--aggressive {
+  border-color: $color-main;
+}
+
+.spot-example {
+  width: 100%;
+  height: auto;
+}
