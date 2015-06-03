@@ -1,35 +1,58 @@
 gulp = require('gulp');
 var browserSync = require('browser-sync');
+var styleguide = require('sc5-styleguide');
+var fs = require('fs');
 var reload = browserSync.reload;
 var rename = require('gulp-rename');
 var notify = require('gulp-notify'); //when on Windows 7 it falls back to Growl, so this should be installed for best experience.
+
 var uglify = require('gulp-uglify');
 var concat = require('gulp-concat');
 var jshint = require('gulp-jshint');
+var eslint = require('gulp-eslint');
 var sourcemaps = require('gulp-sourcemaps');
-var fs = require('fs');
-var sass = require('gulp-sass');
+
 var minifyCSS = require('gulp-minify-css');
 var autoprefixer = require('gulp-autoprefixer');
-var styleguide = require('sc5-styleguide');
-var eslint = require('gulp-eslint');
+var sass = require('gulp-sass');
+var preprocessor = null;
 
 
 /********************************************************/
-/* Settings and helper functions */
+/* Settings */
 var settings = {
     localhost:          '',
     baseDir:            'my website/',
     scriptsDir:         'scripts/',
     siteScriptsFolder:  'site/',
-    mainSassFile:       'main.scss',
-    stylesDir:          'css/'
+    mainStyleFile:      'main',
+    stylesDir:          'styles/',
+    componentsDir:      'components/',
+    projectName:        'My test project',
+    preprocesser:       'sass'
 };
 
+
+
+
+/********************************************************/
+/* Helper functions */
 settings = function initializeSettings() {
+    //convert directories to absolute paths
     settings.scriptsDir = settings.baseDir + settings.scriptsDir;
     settings.siteScriptsDir = settings.scriptsDir + settings.siteScriptsFolder;
     settings.stylesDir = settings.baseDir + settings.stylesDir;
+    settings.componentsDir = settings.baseDir + settings.componentsDir;
+
+    //set preprocessor settings
+    if (settings.preprocesser === 'sass') {
+      preprocessor = sass;
+      settings.preprocesserExtension = 'scss';
+    } else if (settings.preprocesser === 'less') {
+      preprocessor = less;
+      settings.preprocesserExtension = 'less';
+    }
+    settings.mainStyleFile = settings.mainStyleFile + '.' + settings.preprocesserExtension;
 
     return settings;
 }();
@@ -127,10 +150,10 @@ gulp.task('javscript:vendor', function() {
 
 
 //__________________STYLESHEETS______________________//
-gulp.task('sass', function () {
-    gulp.src(settings.stylesDir+settings.mainSassFile)
+gulp.task('style-build', function () {
+    gulp.src(settings.stylesDir + settings.mainStyleFile)
         .pipe(sourcemaps.init())
-        .pipe(sass())
+        .pipe(preprocessor())
         .on('error', handleError)
         .pipe(autoprefixer({
             browsers: ['last 2 versions'],
@@ -146,14 +169,11 @@ gulp.task('sass', function () {
 
 //__________________STYLEGUIDE______________________//
 var styleguideTmpPath = '/styleguide';
-var scssWild = settings.stylesDir + '/**/*.scss';
-var scssRoot = settings.stylesDir + '/main.scss';
-
 
 gulp.task('styleguide:generate', function() {
-  return gulp.src(scssWild)
+  return gulp.src(settings.stylesDir + '/**/*.' + settings.preprocesserExtension)
     .pipe(styleguide.generate({
-        title: 'My First Development Styleguide',
+        title: settings.projectName + ' Styleguide',
         commonClass: ['sgwa-body'],
         server: true,
         rootPath: styleguideTmpPath
@@ -163,8 +183,8 @@ gulp.task('styleguide:generate', function() {
 });
 
 gulp.task('styleguide:applystyles', function() {
-  return gulp.src(scssRoot)
-    .pipe(sass({
+  return gulp.src(settings.stylesDir + settings.mainStyleFile)
+    .pipe(preprocessor({
       errLogToConsole: true
     }))
     .on('error', handleError)
@@ -182,12 +202,12 @@ gulp.task('distribute', ['browser-sync'], function() {
 });
 
 
-gulp.task('default', ['js','sass','browser-sync','styleguide'], function() {
+gulp.task('default', ['js','style-build','browser-sync','styleguide'], function() {
     console.log('default Gulp task started');
 
     //gulp.watch(settings.baseDir+'**/*.html', ['views:updated']);
     gulp.watch(settings.siteScriptsDir+'**/*.js', ['javascript:main']);
     gulp.watch(settings.scriptsDir+'map.json', ['javascript:main']);
     gulp.watch(settings.scriptsDir+'libs-map.json', ['javascript:vendor']);
-    gulp.watch(settings.stylesDir+'**/*.scss', ['sass', 'styleguide']);
+    gulp.watch(settings.stylesDir+'**/*.'  + settings.preprocesserExtension, ['style-build', 'styleguide']);
 });
