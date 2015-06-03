@@ -154,10 +154,11 @@ gulp.task('styleguide:generate', function() {
   return gulp.src(scssWild)
     .pipe(styleguide.generate({
         title: 'My First Development Styleguide',
+        commonClass: ['sgwa-body'],
         server: true,
-        rootPath: styleguideTmpPath//,
-        //overviewPath: overviewPath
+        rootPath: styleguideTmpPath
       }))
+    .on('error', handleError)
     .pipe(gulp.dest(styleguideTmpPath));
 });
 
@@ -166,7 +167,9 @@ gulp.task('styleguide:applystyles', function() {
     .pipe(sass({
       errLogToConsole: true
     }))
+    .on('error', handleError)
     .pipe(styleguide.applyStyles())
+    .on('error', handleError)
     .pipe(gulp.dest(styleguideTmpPath));
 });
 
