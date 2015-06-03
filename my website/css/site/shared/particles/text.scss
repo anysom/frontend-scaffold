@@ -25,7 +25,7 @@ body, .sgwa-body {
   }
 }
 
-p, a, button, strong, em, h1, h2, h3 {
+p, a, button, strong, em, h1, h2, h3, label {
   font-family: sans-serif;
   color: $color-text-main;
   margin: 0;
@@ -35,7 +35,7 @@ p, a, button, strong, em, h1, h2, h3 {
   }
 }
 
-p, a, button, strong, em {
+p, a, button, strong, em, label {
   font-size: 1em;
   line-height: 1.5;
   margin-bottom: 0.5em;
