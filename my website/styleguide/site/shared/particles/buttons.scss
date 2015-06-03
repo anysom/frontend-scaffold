@@ -1,0 +1,20 @@
+// Standard button
+//
+// A push button.
+// the buttons has the following modifiers:
+//
+// default - a normal button
+// .btn--alert - button that calls out more attention
+//
+// markup:
+// <button class="btn {$modifiers}">Click me baby one more time</button>
+//
+// Styleguide 1.3
+
+.btn {
+  background: $color-main;
+}
+
+.btn--alert {
+  background: $color-alert;
+}

@@ -1,0 +1,61 @@
+// Fonts and type
+//
+// This sections demonstrates the different fonts and types.
+//
+//
+// markup:
+// <h1>Heading 1: The quick brown fox jumps over the lazy dog</h1>
+// <p>The quick brown fox jumps over the lazy dog</p>
+// <h2>Heading 2: The quick brown fox jumps over the lazy dog</h2>
+// <p>The quick brown fox jumps over the lazy dog</p>
+// <h3>Heading 3: The quick brown fox jumps over the lazy dog</h3>
+// <p>The quick brown fox jumps over the lazy dog</p>
+// <strong>Strong:  The quick brown fox jumps over the lazy dog</strong>
+// <p>The quick brown fox jumps over the lazy dog</p>
+//
+// Styleguide 1.2
+
+
+/* I am styling on a body class as well as the body tag - this is a workaround because i cannot append styles to the body tag in the styleguide */
+body, .sgwa-body {
+  font-size: $bf;
+
+  @media (min-width: $bp-small) {
+    font-size: $bf-large;
+  }
+}
+
+p, a, button, strong, em, h1, h2, h3, label {
+  font-family: sans-serif;
+  color: $color-text-main;
+  margin: 0;
+
+  &.color-main {
+    color: $color-main;
+  }
+}
+
+p, a, button, strong, em, label {
+  font-size: 1em;
+  line-height: 1.5;
+  margin-bottom: 0.5em;
+}
+
+h1, h2, h3 {
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 2.5em;
+  margin-bottom: 1em;
+}
+
+h2, legend {
+  font-size: 2em;
+  margin-bottom: 0.75em;
+}
+
+h3 {
+  font-size: 1.5em;
+  margin-bottom: 0.5em;
+}

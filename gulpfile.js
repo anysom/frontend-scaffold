@@ -29,9 +29,9 @@ var settings = {
     stylesDir:          'styles/',
     componentsDir:      'components/',
     projectName:        'My test project',
+    styleguideDir:      'styleguide',
     preprocesser:       'sass'
 };
-
 
 
 
@@ -43,6 +43,7 @@ settings = function initializeSettings() {
     settings.siteScriptsDir = settings.scriptsDir + settings.siteScriptsFolder;
     settings.stylesDir = settings.baseDir + settings.stylesDir;
     settings.componentsDir = settings.baseDir + settings.componentsDir;
+    settings.styleguideDir = settings.baseDir + settings.styleguideDir;
 
     //set preprocessor settings
     if (settings.preprocesser === 'sass') {
@@ -133,15 +134,13 @@ gulp.task('javascript:main', function() {
 });
 
 
-//I split up my vendor JS into a seperate task, since there is not need that
-//all the vendor code should be checked by jshint every time i change something
+//I split up my vendor JS into a seperate task, since there is no need that
+//all the vendor code should be checked by my linting tools every time i change something
 //in my own javascript.
 gulp.task('javscript:vendor', function() {
     var mapJSON = readJSONFile(settings.scriptsDir+'libs-map.json');
 
     //I don't obfuscate the libs, since i expect them to be already
-    //But in the case that they are not,
-
     gulp.src(mapJSON)
         .pipe(concat('libs.min.js'))
         .pipe(gulp.dest(settings.scriptsDir))
@@ -152,7 +151,6 @@ gulp.task('javscript:vendor', function() {
 //__________________STYLESHEETS______________________//
 gulp.task('style-build', function () {
     gulp.src(settings.stylesDir + settings.mainStyleFile)
-        .pipe(sourcemaps.init())
         .pipe(preprocessor())
         .on('error', handleError)
         .pipe(autoprefixer({
@@ -161,6 +159,9 @@ gulp.task('style-build', function () {
         }))
         .on('error', handleError)
         .pipe(minifyCSS())
+        .pipe(styleguide.applyStyles())
+        .pipe(gulp.dest(settings.styleguideDir))
+        .on('error', handleError)
         .pipe(rename('main.min.css'))
         .pipe(gulp.dest(settings.stylesDir))
         .pipe(reload({stream: true}));
@@ -168,32 +169,19 @@ gulp.task('style-build', function () {
 
 
 //__________________STYLEGUIDE______________________//
-var styleguideTmpPath = '/styleguide';
 
-gulp.task('styleguide:generate', function() {
+//this task only initializes the styleguide. During the style-build task the styleguide is updated with components and styles.
+gulp.task('styleguide', function() {
   return gulp.src(settings.stylesDir + '/**/*.' + settings.preprocesserExtension)
     .pipe(styleguide.generate({
         title: settings.projectName + ' Styleguide',
         commonClass: ['sgwa-body'],
         server: true,
-        rootPath: styleguideTmpPath
+        rootPath: settings.styleguideDir
       }))
     .on('error', handleError)
-    .pipe(gulp.dest(styleguideTmpPath));
+    .pipe(gulp.dest(settings.styleguideDir));
 });
-
-gulp.task('styleguide:applystyles', function() {
-  return gulp.src(settings.stylesDir + settings.mainStyleFile)
-    .pipe(preprocessor({
-      errLogToConsole: true
-    }))
-    .on('error', handleError)
-    .pipe(styleguide.applyStyles())
-    .on('error', handleError)
-    .pipe(gulp.dest(styleguideTmpPath));
-});
-
-gulp.task('styleguide', ['styleguide:generate', 'styleguide:applystyles']);
 
 /********************************************************/
 /* Gulp Tasks */

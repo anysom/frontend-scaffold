@@ -1,0 +1,18 @@
+/*Import external fonts*/
+/*@import url(http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,600,700);*/
+
+/*include font files from assets*/
+/*@font-face {
+    font-family: 'reklame_script_regular';
+    src: url('/sites/all/themes/sunset/fonts/reklamescript-regular-webfont.eot');
+    src: url('/sites/all/themes/sunset/fonts/reklamescript-regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/sites/all/themes/sunset/fonts/reklamescript-regular-webfont.woff') format('woff'),
+         url('/sites/all/themes/sunset/fonts/reklamescript-regular-webfont.ttf') format('truetype'),
+         url('/sites/all/themes/sunset/fonts/reklamescript-regular-webfont.svg#reklame_script_regularregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}*/
+
+* {
+  font-family: sans-serif;
+}

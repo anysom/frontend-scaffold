@@ -1,0 +1,16 @@
+/* All Vendor stylesheets should be included first */
+@import 'vendor/normalize.scss';
+
+/* Import all components form the componets folder - these can be overrided by the shared styles */
+@import '../components/components.scss';
+
+/* All shared styles should be included next, so they can utilize vendor styles */
+@import 'site/shared/prerequisites/prerequisites.scss';
+@import 'site/shared/particles/particles.scss';
+@import 'site/shared/atoms/atoms.scss';
+@import 'site/shared/molecules/molecules.scss';
+@import 'site/shared/layouts/layouts.scss';
+
+
+/* lastly all page styles are included. These override shared styles on a page specific level, and hopefully shouldn't contain many style rules */
+//@import 'site/pages/whateverPage.scss';

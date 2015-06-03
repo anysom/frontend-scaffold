@@ -1,0 +1,13 @@
+// Form inputs
+//
+// This sections demonstrates the different form inputs in their different states
+//
+//
+// markup:
+// <input type="text">
+//
+// Styleguide 1.4
+
+input[type="text"], input[type="password"], input[type="email"] {
+  padding: 12px;
+}
