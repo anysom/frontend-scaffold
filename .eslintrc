@@ -1,4 +1,10 @@
 rules:
   quotes: [2, 'single']
   eqeqeq: [2, 'smart']
+  default-case 2
   space-after-keywords: 2
+  space-before-blocks: 2
+  no-unused-vars: [2, args: none]
+  no-multi-space: 2
+  no-unused-expressions: 2
+

@@ -119,16 +119,16 @@ gulp.task('javascript:main', function() {
     gulp.src(mapJSON)
         .pipe(jshint())
         .pipe(jshint.reporter('default'))
-        /*.pipe(eslint())
+        .pipe(eslint())
         .pipe(eslint.format())
         .pipe(eslint.failOnError())
-        .on('error', handleError)*/
+        .on('error', handleError)
         .pipe(sourcemaps.init())
         .pipe(concat('main.min.js'))
         //.pipe(ngAnnotate()) /*include this line only if using angular*/
         .on('error', handleError)
         .pipe(uglify({ mangle: true }))
-        .pipe(sourcemaps.write({sourceRoot: './site'}))
+        .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest(settings.scriptsDir))
         .pipe(reload({stream:true}))
 });
@@ -185,10 +185,6 @@ gulp.task('styleguide', function() {
 
 /********************************************************/
 /* Gulp Tasks */
-
-gulp.task('distribute', ['browser-sync'], function() {
-});
-
 
 gulp.task('default', ['js','style-build','browser-sync','styleguide'], function() {
     console.log('default Gulp task started');
