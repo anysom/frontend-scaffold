@@ -21,9 +21,10 @@
 }
 
 .spot-example--rounded {
-  border-radius: 30px;
+  border-radius: 20px;
+  overflow: hidden;
 }
 
 .spot-example--aggressive {
-  border-color: $color-main;
+  border-color: $color-alert;
 }

@@ -1,4 +1,5 @@
 var exp = true;
-if(exp) {
+if (exp) {
+  console.log('it works');
   console.log('it works');
 }
