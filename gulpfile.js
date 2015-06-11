@@ -73,6 +73,20 @@ function readJSONFile(path) {
     return JSON.parse(str);
 }
 
+var deleteFolderRecursive = function(path) {
+  if( fs.existsSync(path) ) {
+    fs.readdirSync(path).forEach(function(file,index){
+      var curPath = path + "/" + file;
+      if(fs.lstatSync(curPath).isDirectory()) { // recurse
+        deleteFolderRecursive(curPath);
+      } else { // delete file
+        fs.unlinkSync(curPath);
+      }
+    });
+    fs.rmdirSync(path);
+  }
+};
+
 
 /********************************************************/
 /* Sub Tasks */
@@ -116,6 +130,9 @@ gulp.task('javascript:main', function() {
     var mapJSON = readJSONFile(settings.scriptsDir+'map.json');
     console.log('mapJson', mapJSON);
 
+    //delete old sourcemaps folder
+    deleteFolderRecursive(settings.scriptsDir + '/sourcemaps/');
+
     gulp.src(mapJSON)
         .pipe(jshint())
         .pipe(jshint.reporter('default'))
@@ -128,7 +145,7 @@ gulp.task('javascript:main', function() {
         //.pipe(ngAnnotate()) /*include this line only if using angular*/
         .on('error', handleError)
         .pipe(uglify({ mangle: true }))
-        .pipe(sourcemaps.write('.'))
+        .pipe(sourcemaps.write('./sourcemaps/'+ Date.now() + '/'))
         .pipe(gulp.dest(settings.scriptsDir))
         .pipe(reload({stream:true}))
 });
