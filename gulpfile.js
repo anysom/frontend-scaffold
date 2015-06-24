@@ -123,7 +123,7 @@ gulp.task('views-updated', function() {
 
 
 //__________________JAVASCRIPT______________________//
-gulp.task('js', ['javscript:vendor', 'javascript:main']);
+gulp.task('js', ['javascript:vendor', 'javascript:main']);
 
 gulp.task('javascript:main', function() {
     console.log('running: javascript-updated');
@@ -131,7 +131,7 @@ gulp.task('javascript:main', function() {
     console.log('mapJson', mapJSON);
 
     //delete old sourcemaps folder
-    deleteFolderRecursive(settings.scriptsDir + '/sourcemaps/');
+    //deleteFolderRecursive(settings.scriptsDir + '/sourcemaps/');
 
     gulp.src(mapJSON)
         .pipe(jshint())
@@ -144,8 +144,11 @@ gulp.task('javascript:main', function() {
         .pipe(concat('main.min.js'))
         //.pipe(ngAnnotate()) /*include this line only if using angular*/
         .on('error', handleError)
-        .pipe(uglify({ mangle: true }))
-        .pipe(sourcemaps.write('./sourcemaps/'+ Date.now() + '/'))
+        //.pipe(uglify({ mangle: true }))
+
+        /* Writin the source maps can give an 'EPERM, operation not permitted' error, if the user hasn't got write rights to the folder */
+        //.pipe(sourcemaps.write('./sourcemaps/'+ Date.now() + '/'))
+        .pipe(sourcemaps.write('./sourcemaps/main.min.js.map'))
         .pipe(gulp.dest(settings.scriptsDir))
         .pipe(reload({stream:true}))
 });
@@ -154,7 +157,7 @@ gulp.task('javascript:main', function() {
 //I split up my vendor JS into a seperate task, since there is no need that
 //all the vendor code should be checked by my linting tools every time i change something
 //in my own javascript.
-gulp.task('javscript:vendor', function() {
+gulp.task('javascript:vendor', function() {
     var mapJSON = readJSONFile(settings.scriptsDir+'libs-map.json');
 
     //I don't obfuscate the libs, since i expect them to be already
@@ -194,7 +197,8 @@ gulp.task('styleguide', function() {
         title: settings.projectName + ' Styleguide',
         commonClass: ['sgwa-body'],
         server: true,
-        rootPath: settings.styleguideDir
+        rootPath: settings.styleguideDir,
+        port: 5000
       }))
     .on('error', handleError)
     .pipe(gulp.dest(settings.styleguideDir));

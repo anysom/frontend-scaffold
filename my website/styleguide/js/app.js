@@ -109,11 +109,26 @@ angular.module('sgApp', [
       modules: window.filesConfig
     });
   }])
-  .run(["$rootScope", function($rootScope) {
+  .factory('lodash', ['$window',
+    function($window) {
+      // Use both methods to access _ so it will work eventhough $window is mocked
+      return $window._ || window._;
+    }
+  ])
+  .run(["$rootScope", "$window", "lodash", function($rootScope, $window, lodash) {
     $rootScope.currentReference = {
       section: {
       }
     };
+
+    // Create global throttled scorll
+    function broadcastScrollEvent(event) {
+      $rootScope.$broadcast('scroll', event);
+    }
+    // Some tests replace $window with a mock, make sure that we have real window
+    if (typeof $window.addEventListener === 'function') {
+      angular.element($window).bind('scroll', lodash.throttle(broadcastScrollEvent, 350));
+    }
   }])
   .filter('addWrapper', ['Styleguide', function(Styleguide) {
     return function(html) {
@@ -164,7 +179,8 @@ angular.module('sgApp', [
       }
 
       angular.forEach(sortedVariables, function(variable) {
-        str = str.replace(new RegExp('\[\$\@]' + variable.name, 'g'), variable.value);
+        var cleanedValue = variable.value.replace(/\s*\!default$/, '');
+        str = str.replace(new RegExp('\[\$\@]' + variable.name, 'g'), cleanedValue);
       });
       return str;
     };
@@ -416,6 +432,9 @@ angular.module('sgApp')
         });
         if (result.length > 0) {
           $rootScope.pageTitle = result[0].reference + ' ' + result[0].header + ' - ' + Styleguide.config.data.title;
+
+          // Update current reference even before user starts scrolling
+          $rootScope.currentReference.section = result[0];
         }
       }
     }
@@ -438,6 +457,8 @@ angular.module('sgApp')
       }
       return new RegExp('^' + $scope.currentSection + '(\\D|$)').test(section.reference);
     };
+
+    setPageTitle();
   }]);
 
 angular.module('sgApp')
@@ -582,7 +603,7 @@ angular.module('sgApp')
         scope.section.showCSS = false;
 
         // Listen to scroll events and update currentReference if this section is currently focused
-        angular.element($window).bind('scroll', function() {
+        scope.$on('scroll', function() {
           updateCurrentReference();
         });
 
@@ -947,6 +968,9 @@ angular.module('sgApp')
               this.variables.splice(i, 0, angular.copy(serverData[i]));
             }
           } else if (this.variables[i] && this.variableMatches(this.variables[i], serverData[i])) {
+            // The linenumber might have changed
+            this.variables[i].line = serverData[i].line;
+
             // Variable exists already locally
             // Update value if variable does not have any local changes
             if (!this.variables[i].dirty) {

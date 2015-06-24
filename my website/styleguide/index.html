@@ -32,7 +32,7 @@
       }
 
       addCssLink('/styleguide_at_rules.css');
-      addCssLink('/css/app.css', {noReload: true});
+      addCssLink('/app.css', {noReload: true});
     }());
   </script>
   <script type="text/ng-template" id="userStyles.html">
@@ -42,7 +42,7 @@
       @import url('/css/styleguide_helper_elements.css');
     </style>
   </script>
-  <title ng-bind="$root.pageTitle">My test project Styleguide</title>
+  <title ng-bind-html="$root.pageTitle | unsafe">My test project Styleguide</title>
   
   <base href="/" />
 </head>
