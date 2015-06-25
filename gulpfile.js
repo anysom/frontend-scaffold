@@ -18,6 +18,17 @@ var sass = require('gulp-sass');
 var preprocessor = null;
 
 
+
+/********************************************************/
+/* NOTES */
+/*
+    -It seems that JS sourcemaps are not loaded by the browser initially
+    when Gulp is started and it opens the browser. It has to be refreshed first.
+
+    -Writing the source maps can give an 'EPERM, operation not permitted' error, if the user hasn't got write rights to the folder
+*/
+
+
 /********************************************************/
 /* Settings */
 var settings = {
@@ -142,13 +153,11 @@ gulp.task('javascript:main', function() {
         .on('error', handleError)
         .pipe(sourcemaps.init())
         .pipe(concat('main.min.js'))
-        //.pipe(ngAnnotate()) /*include this line only if using angular*/
+        //.pipe(ngAnnotate()) //include this line only if using angular
         .on('error', handleError)
-        //.pipe(uglify({ mangle: true }))
-
-        /* Writin the source maps can give an 'EPERM, operation not permitted' error, if the user hasn't got write rights to the folder */
+        .pipe(uglify({ mangle: false }))
         //.pipe(sourcemaps.write('./sourcemaps/'+ Date.now() + '/'))
-        .pipe(sourcemaps.write('./sourcemaps/main.min.js.map'))
+        .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest(settings.scriptsDir))
         .pipe(reload({stream:true}))
 });
