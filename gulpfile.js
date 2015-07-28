@@ -141,7 +141,9 @@ gulp.task('javascript:main', function() {
     var mapJSON = readJSONFile(settings.scriptsDir+'map.json');
     console.log('mapJson', mapJSON);
 
-    //delete old sourcemaps folder
+    //if there are problems with the sourcemap being cached, we can save it
+    //in a timestamp name folder .pipe(sourcemaps.write('./sourcemaps/'+ Date.now() + '/'))
+    //In that case, remember to delete old sourcemaps folder so we wont get more and more soucemaps
     //deleteFolderRecursive(settings.scriptsDir + '/sourcemaps/');
 
     gulp.src(mapJSON)
@@ -156,8 +158,7 @@ gulp.task('javascript:main', function() {
         //.pipe(ngAnnotate()) //include this line only if using angular
         .on('error', handleError)
         .pipe(uglify({ mangle: false }))
-        //.pipe(sourcemaps.write('./sourcemaps/'+ Date.now() + '/'))
-        .pipe(sourcemaps.write('./'))
+        .pipe(sourcemaps.write('./sourcemaps/'))
         .pipe(gulp.dest(settings.scriptsDir))
         .pipe(reload({stream:true}))
 });
