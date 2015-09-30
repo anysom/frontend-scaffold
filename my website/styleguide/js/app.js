@@ -180,6 +180,16 @@ angular.module('sgApp', [
 
       angular.forEach(sortedVariables, function(variable) {
         var cleanedValue = variable.value.replace(/\s*\!default$/, '');
+
+        if (cleanedValue.match('\[\$\@]') !== null) {
+          var varName = cleanedValue.substring(1);
+          angular.forEach(sortedVariables, function(_var) {
+            if (_var.name === varName) {
+              cleanedValue = _var.value;
+            }
+          });
+        }
+
         str = str.replace(new RegExp('\[\$\@]' + variable.name, 'g'), cleanedValue);
       });
       return str;
@@ -558,7 +568,7 @@ angular.module('sgApp')
 'use strict';
 
 angular.module('sgApp')
-  .directive('dynamicCompile', ["$compile", "$parse", function($compile, $parse) {
+  .directive('dynamicCompile', ["$compile", "$parse", "$window", function($compile, $parse, $window) {
     return {
       link: function(scope, element, attrs) {
         var parsed = $parse(attrs.ngBindHtml);
@@ -566,6 +576,17 @@ angular.module('sgApp')
         // Recompile if the template changes
         scope.$watch(getStringValue, function() {
           $compile(element, null, 0)(scope);
+          // Emit an event that an element is rendered
+          element.ready(function() {
+            var event = new CustomEvent('styleguide:onRendered', {
+              detail: {
+                elements: element
+              },
+              bubbles: true,
+              cancelable: true
+            });
+            $window.dispatchEvent(event);
+          });
         });
       }
     };

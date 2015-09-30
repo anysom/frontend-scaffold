@@ -35385,35 +35385,22 @@ angular.module('rt.debounce', []).factory('debounce', [
         cancel();
         timeout = $timeout(ping, wait);
       }
-      // Forces the execution of pending calls
-      function flushPending() {
-        var pending = !!context;
-        if (pending) {
-          // Call pending, do it now.
-          cancel();
-          ping();
-        }
-        return pending;
-      }
       // The wrapper also has a flush method, which you can use to
       // force the execution of the last scheduled call to happen
       // immediately (if any). It will also return the result of that
       // call. Note that for asynchronous operations, you'll need to
       // return a promise and wait for that one to resolve.
       wrapper.flush = function () {
-        if (!flushPending() && !timeout) {
+        if (context) {
+          // Call pending, do it now.
+          cancel();
+          ping();
+        } else if (!timeout) {
           // Never been called.
           ping();
         }
         return result;
       };
-      // Flushes pending calls if any
-      wrapper.flushPending = function () {
-        flushPending();
-        return result;
-      };
-      // Cancels the queued execution if any
-      wrapper.cancel = cancel;
       return wrapper;
     };
   }
@@ -48257,6 +48244,57 @@ angular.module('duScroll.scrollspy', ['duScroll.spyAPI'])
     root._ = _;
   }
 }.call(this));
+
+
+(function (global, factory) {
+  if (typeof define === 'function' && define.amd) {
+    define([], factory);
+  }
+  else if (typeof exports === 'object') {
+    module.exports = factory();
+  }
+  else {
+    global.CustomEvent = factory();
+  }
+}(this, function() {
+
+  /**
+   * Create a new CustomEvent, native falling back to polyfill.
+   *
+   * @param  {String} type   The name the custom event type
+   * @param  {Object} params Initialization object; see native API
+   */
+
+  var CustomEvent = window.CustomEvent || function(type, params) {
+    var e;
+
+    params = params || {
+      bubbles: false,
+      cancelable: false,
+      detail: undefined
+    };
+
+    try {
+      e = document.createEvent('CustomEvent');
+      e.initCustomEvent(type, params.bubbles, params.cancelable, params.detail);
+    }
+    catch(error) {
+      // If we don’t even have initCustomEvent, use a regular event instead.
+      e = document.createEvent('Event');
+      e.initEvent(type, params.bubbles, params.cancelable);
+      e.detail = params.detail;
+    }
+
+    return e;
+  };
+
+  /**
+   * Exports
+   */
+
+  return CustomEvent;
+
+}));
 
 /*global angular*/
 angular.module('hljs', [])

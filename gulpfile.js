@@ -1,3 +1,4 @@
+//general tasks
 gulp = require('gulp');
 var browserSync = require('browser-sync');
 var styleguide = require('sc5-styleguide');
@@ -5,18 +6,23 @@ var fs = require('fs');
 var reload = browserSync.reload;
 var rename = require('gulp-rename');
 var notify = require('gulp-notify'); //when on Windows 7 it falls back to Growl, so this should be installed for best experience.
-
-var uglify = require('gulp-uglify');
-var concat = require('gulp-concat');
+var gutil = require('gulp-util');
+var path = require('path');
+//JS Specific tasks
 var jshint = require('gulp-jshint');
 var eslint = require('gulp-eslint');
+var exorcist   = require('exorcist');
+//var browserify = require('gulp-browserify');
 var sourcemaps = require('gulp-sourcemaps');
+var browserify = require('browserify');
+var source = require('vinyl-source-stream');
+var buffer = require('vinyl-buffer');
 
+//CSS Specific tasks
 var minifyCSS = require('gulp-minify-css');
 var autoprefixer = require('gulp-autoprefixer');
 var sass = require('gulp-sass');
 var preprocessor = null;
-
 
 
 /********************************************************/
@@ -35,13 +41,15 @@ var settings = {
     localhost:          '',
     baseDir:            'my website/',
     scriptsDir:         'scripts/',
-    siteScriptsFolder:  'site/',
+    siteScriptsFolder:  'source/',
+    appStartFile:       'app.js',
     mainStyleFile:      'main',
     stylesDir:          'styles/',
     componentsDir:      'components/',
     projectName:        'My test project',
     styleguideDir:      'styleguide',
-    preprocesser:       'sass'
+    preprocesser:       'sass',
+    production:         true
 };
 
 
@@ -134,47 +142,45 @@ gulp.task('views-updated', function() {
 
 
 //__________________JAVASCRIPT______________________//
-gulp.task('js', ['javascript:vendor', 'javascript:main']);
+gulp.task('js', ['javascript:lint', 'javascript:build']);
 
-gulp.task('javascript:main', function() {
-    console.log('running: javascript-updated');
-    var mapJSON = readJSONFile(settings.scriptsDir+'map.json');
-    console.log('mapJson', mapJSON);
-
-    //if there are problems with the sourcemap being cached, we can save it
-    //in a timestamp name folder .pipe(sourcemaps.write('./sourcemaps/'+ Date.now() + '/'))
-    //In that case, remember to delete old sourcemaps folder so we wont get more and more soucemaps
-    //deleteFolderRecursive(settings.scriptsDir + '/sourcemaps/');
-
-    gulp.src(mapJSON)
-        .pipe(jshint())
-        .pipe(jshint.reporter('default'))
-        .pipe(eslint())
-        .pipe(eslint.format())
-        .pipe(eslint.failOnError())
-        .on('error', handleError)
-        .pipe(sourcemaps.init())
-        .pipe(concat('main.min.js'))
-        //.pipe(ngAnnotate()) //include this line only if using angular
-        .on('error', handleError)
-        .pipe(uglify({ mangle: false }))
-        .pipe(sourcemaps.write('./sourcemaps/'))
-        .pipe(gulp.dest(settings.scriptsDir))
-        .pipe(reload({stream:true}))
+gulp.task('javascript:lint', function() {
+  gulp.src(settings.siteScriptsDir + '**/*.js')
+      .pipe(jshint())
+      .pipe(jshint.reporter('default'))
+      .pipe(eslint())
+      .pipe(eslint.format())
+      .pipe(eslint.failOnError())
+      .on('error', handleError);
 });
 
-
-//I split up my vendor JS into a seperate task, since there is no need that
-//all the vendor code should be checked by my linting tools every time i change something
-//in my own javascript.
-gulp.task('javascript:vendor', function() {
-    var mapJSON = readJSONFile(settings.scriptsDir+'libs-map.json');
-
-    //I don't obfuscate the libs, since i expect them to be already
-    gulp.src(mapJSON)
-        .pipe(concat('libs.min.js'))
-        .pipe(gulp.dest(settings.scriptsDir))
-        .pipe(reload({ stream: true }))
+gulp.task('javascript:build', function() {
+    var files = settings.siteScriptsDir + settings.appStartFile;
+    
+    //build script for DEV
+    var bDev = browserify({
+      entries: [files],
+      debug: true
+    });
+    bDev.bundle()
+      .pipe(source('bundle.js'))
+      .pipe(buffer())
+      .pipe(rename('main.min.dev.js'))
+      .pipe(gulp.dest(settings.scriptsDir))
+      .pipe(reload({stream: true}));
+  
+  
+    //build script for PROD
+    var bProd = browserify({
+      entries: [files],
+      transform: ['uglifyify'],
+      debug: false
+    });    
+    bProd.bundle()
+      .pipe(source('bundleprod.js'))
+      .pipe(buffer())
+      .pipe(rename('main.min.js'))
+      .pipe(gulp.dest(settings.scriptsDir));
 });
 
 
@@ -221,8 +227,6 @@ gulp.task('default', ['js','style-build','browser-sync','styleguide'], function(
     console.log('default Gulp task started');
 
     //gulp.watch(settings.baseDir+'**/*.html', ['views:updated']);
-    gulp.watch(settings.siteScriptsDir+'**/*.js', ['javascript:main']);
-    gulp.watch(settings.scriptsDir+'map.json', ['javascript:main']);
-    gulp.watch(settings.scriptsDir+'libs-map.json', ['javascript:vendor']);
+    gulp.watch(settings.siteScriptsDir+'**/*.js', ['js']);
     gulp.watch(settings.stylesDir+'**/*.'  + settings.preprocesserExtension, ['style-build', 'styleguide']);
 });

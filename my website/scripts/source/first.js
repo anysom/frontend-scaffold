@@ -1,15 +1,16 @@
 (function() {
   'use strict';
 
+  console.log('this is first.js');
+
   function doManyThings(input) {
     return input * 3;
   }
 
   var exp = true;
   if (exp) {
-    console.log('it works');
     var myStuff = doManyThings(7);
-    console.log('it works', myStuff);
+    console.log('first.js: doManyThings', myStuff);
   }
 })();
 
