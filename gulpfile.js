@@ -45,10 +45,12 @@ var settings = {
     appStartFile:       'app.js',
     mainStyleFile:      'main',
     stylesDir:          'styles/',
+    markupDir:          'views/',
     componentsDir:      'components/',
     projectName:        'My test project',
     styleguideDir:      'styleguide',
     preprocesser:       'sass',
+    markupExtension:    'cshtml',
     production:         true
 };
 
@@ -63,6 +65,7 @@ settings = function initializeSettings() {
     settings.stylesDir = settings.baseDir + settings.stylesDir;
     settings.componentsDir = settings.baseDir + settings.componentsDir;
     settings.styleguideDir = settings.baseDir + settings.styleguideDir;
+    settings.markupDir = settings.baseDir + settings.markupDir;
 
     //set preprocessor settings
     if (settings.preprocesser === 'sass') {
@@ -135,11 +138,10 @@ gulp.task('browser-sync', function() {
 
 gulp.task('views-updated', function() {
     console.log('running: views-updated');
-    gulp.src(settings.baseDir+'**/*.html')
+    gulp.src(settings.markupDir+'**/*.' + settings.markupExtension)
         .pipe(reload({stream:true}))
         .pipe(notify('Views updated'));
 });
-
 
 //__________________JAVASCRIPT______________________//
 gulp.task('js', ['javascript:lint', 'javascript:build']);
@@ -229,4 +231,5 @@ gulp.task('default', ['js','style-build','browser-sync','styleguide'], function(
     //gulp.watch(settings.baseDir+'**/*.html', ['views:updated']);
     gulp.watch(settings.siteScriptsDir+'**/*.js', ['js']);
     gulp.watch(settings.stylesDir+'**/*.'  + settings.preprocesserExtension, ['style-build', 'styleguide']);
+    gulp.watch(settings.markupDir+'**/*.' + settings.markupExtension, ['views-updated']);
 });
