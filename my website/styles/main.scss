@@ -2,7 +2,7 @@
 @import 'vendor/normalize.scss';
 
 /* Import all components form the componets folder - these can be overrided by the shared styles */
-@import '../components/components.scss';
+//@import '../components/components.scss';
 
 /* All shared styles should be included next, so they can utilize vendor styles */
 @import 'site/shared/prerequisites/_prerequisites.scss';

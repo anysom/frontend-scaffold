@@ -50,7 +50,7 @@ var settings = {
     projectName:        'My test project',
     styleguideDir:      'styleguide',
     preprocesser:       'sass',
-    markupExtension:    'cshtml',
+    markupExtension:    'csShtml',
     production:         true
 };
 
@@ -158,7 +158,7 @@ gulp.task('javascript:lint', function() {
 
 gulp.task('javascript:build', function() {
     var files = settings.siteScriptsDir + settings.appStartFile;
-    
+
     //build script for DEV
     var bDev = browserify({
       entries: [files],
@@ -170,14 +170,14 @@ gulp.task('javascript:build', function() {
       .pipe(rename('main.min.dev.js'))
       .pipe(gulp.dest(settings.scriptsDir))
       .pipe(reload({stream: true}));
-  
-  
+
+
     //build script for PROD
     var bProd = browserify({
       entries: [files],
       transform: ['uglifyify'],
       debug: false
-    });    
+    });
     bProd.bundle()
       .pipe(source('bundleprod.js'))
       .pipe(buffer())
@@ -188,6 +188,7 @@ gulp.task('javascript:build', function() {
 
 //__________________STYLESHEETS______________________//
 gulp.task('style-build', function () {
+  console.log('!!!!!STYLE!!!!!!!', settings.stylesDir + settings.mainStyleFile);
     gulp.src(settings.stylesDir + settings.mainStyleFile)
         .pipe(preprocessor())
         .on('error', handleError)
@@ -197,7 +198,7 @@ gulp.task('style-build', function () {
         }))
         .on('error', handleError)
         .pipe(minifyCSS())
-        .pipe(styleguide.applyStyles())
+        //.pipe(styleguide.applyStyles())
         .pipe(gulp.dest(settings.styleguideDir))
         .on('error', handleError)
         .pipe(rename('main.min.css'))
@@ -228,7 +229,6 @@ gulp.task('styleguide', function() {
 gulp.task('default', ['js','style-build','browser-sync','styleguide'], function() {
     console.log('default Gulp task started');
 
-    //gulp.watch(settings.baseDir+'**/*.html', ['views:updated']);
     gulp.watch(settings.siteScriptsDir+'**/*.js', ['js']);
     gulp.watch(settings.stylesDir+'**/*.'  + settings.preprocesserExtension, ['style-build', 'styleguide']);
     gulp.watch(settings.markupDir+'**/*.' + settings.markupExtension, ['views-updated']);
