@@ -198,11 +198,11 @@ gulp.task('style-build', function () {
         }))
         .on('error', handleError)
         .pipe(minifyCSS())
-        //.pipe(styleguide.applyStyles())
-        .pipe(gulp.dest(settings.styleguideDir))
         .on('error', handleError)
         .pipe(rename('main.min.css'))
         .pipe(gulp.dest(settings.stylesDir))
+        .pipe(styleguide.applyStyles())
+        .pipe(gulp.dest(settings.styleguideDir))
         .pipe(reload({stream: true}));
 });
 

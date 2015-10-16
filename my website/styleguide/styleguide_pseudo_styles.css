@@ -1,0 +1,12 @@
+a.pseudo-class-active,
+a.pseudo-class-focus,
+a.pseudo-class-hover {
+  outline: 0;
+}
+
+a.pseudo-class-active,
+a.pseudo-class-focus,
+a.pseudo-class-hover,
+a.pseudo-class-visited {
+  text-decoration: none;
+}

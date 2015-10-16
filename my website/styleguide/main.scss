@@ -13,3 +13,8 @@
 
 /* lastly all page styles are included. These override shared styles on a page specific level, and hopefully shouldn't contain many style rules */
 //@import 'site/pages/whateverPage.scss';
+
+
+body {
+  background: blue;
+}

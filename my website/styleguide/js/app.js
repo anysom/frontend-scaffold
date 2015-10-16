@@ -92,11 +92,11 @@ angular.module('sgApp', [
 
     function loadModule($ocLazyLoad) {
       if (window.filesConfig && window.filesConfig.length) {
-        var fileNames = [];
-        angular.forEach(window.filesConfig, function(file) {
-          fileNames.push(file.name);
+        var moduleNames = [];
+        angular.forEach(window.filesConfig, function(lazyLoadmodule) {
+          moduleNames.push(lazyLoadmodule.name);
         });
-        return $ocLazyLoad.load(fileNames);
+        return $ocLazyLoad.load(moduleNames);
       }
     }
 
@@ -245,7 +245,7 @@ angular.module('sgApp')
   }]);
 
 angular.module('sgApp')
-  .controller('ElementCtrl', ["$scope", "$rootScope", "$stateParams", "$state", "Styleguide", "Variables", "$filter", function($scope, $rootScope, $stateParams, $state, Styleguide, Variables, $filter) {
+  .controller('ElementCtrl', ["$scope", "$rootScope", "$stateParams", "$state", "Styleguide", "Variables", "$filter", "$location", function($scope, $rootScope, $stateParams, $state, Styleguide, Variables, $filter, $location) {
 
     var section = $stateParams.section.split('-'),
       reference = section[0],
@@ -316,16 +316,30 @@ angular.module('sgApp')
       }
     }
 
+    function getSectionMarkup(section) {
+      return $filter('setVariables')($filter('setModifierClass')(section.renderMarkup, section.className), $scope.variables);
+    }
+
     function updatePageData() {
-      var sections, result, element, modifierStr;
+      var recursive = $location.search().recursive,
+        separator = '<br>',
+        sections, result, element, markup, modifierStr;
+
       if (!Styleguide.sections.data) {
         return;
       }
       sections = Styleguide.sections.data;
 
       // Find correct element definition from styleguide data
-      result = sections.filter(function(item) {
-        return reference === item.reference;
+      result = sections.filter(function(section) {
+        if (reference === 'all') {
+          return true;
+        }
+        if (recursive) {
+          return new RegExp('^' + reference + '(\\D|$)').test(section.reference);
+        } else {
+          return reference === section.reference;
+        }
       });
 
       if (result.length > 0) {
@@ -337,17 +351,35 @@ angular.module('sgApp')
           $rootScope.pageTitle = element.reference + modifierStr + ' ' + element.header + ' - ' + Styleguide.config.data.title;
         }
 
-        // Select correct modifier element if one is defined
-        if (modifier) {
-          element = element.modifiers[modifier - 1];
-        }
-
         // Set the actual page content
         $scope.previousSection = previousSection(sections, result);
         $scope.nextSection = nextSection(sections, result);
-        $scope.section = element;
         $scope.variables = Variables.variables;
-        $scope.markup = $filter('setVariables')($filter('setModifierClass')(element.wrappedMarkup, element.className), $scope.variables);
+
+        // Collect every component markup when using recursive mode
+        if (recursive) {
+          markup = '';
+          angular.forEach(result, function(section) {
+            if (section.modifiers && section.modifiers.length > 0) {
+              // If section contains modifier, render every modifier
+              angular.forEach(section.modifiers, function(modifier) {
+                markup += getSectionMarkup(modifier) + separator;
+              });
+            } else {
+              // Otherwise just render the element
+              markup += getSectionMarkup(section) + separator;
+            }
+          });
+        } else {
+          // Select correct modifier element if one is defined
+          if (modifier) {
+            element = element.modifiers[modifier - 1];
+          }
+          markup = getSectionMarkup(element);
+        }
+
+        $scope.section = element;
+        $scope.markup = markup;
       }
     }
   }]);
@@ -450,7 +482,7 @@ angular.module('sgApp')
     }
 
     $scope.isEmptyMainSection = function(section) {
-      return section.reference.indexOf('.') === -1 && !section.wrappedMarkup && (!section.modifiers || section.modifiers.length === 0);
+      return section.reference.indexOf('.') === -1 && !section.renderMarkup && (!section.modifiers || section.modifiers.length === 0);
     };
 
     $scope.isActive = function(section) {

@@ -8,9 +8,6 @@
     "lodash": "^3.10.1"
   },
   "devDependencies": {
-    "gulp-util": "^3.0.6",
-    "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0",
     "browser-sync": "^2.8.1",
     "browserify": "^11.0.1",
     "exorcist": "^0.4.0",
@@ -26,7 +23,10 @@
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^2.0.4",
     "gulp-sourcemaps": "^1.5.2",
-    "sc5-styleguide": "^0.3.27",
-    "uglifyify": "^3.0.1"
+    "gulp-util": "^3.0.6",
+    "sc5-styleguide": "^0.3.37",
+    "uglifyify": "^3.0.1",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
   }
 }

@@ -1,0 +1,31 @@
+// A spot for highlighting content
+//
+// The spot will be used to linking to content by displaying and image, a header and a short copy.
+//
+// default - a normal button
+// .test--rounded - with rounded corners
+// .test--aggressive - for cool angry colors
+//
+// markup:
+// <a class="test {$modifiers}">
+//  <img class="spot-example__img" src="http://lorempixel.com/300/200/">
+//  <h3>This is the header</h3>
+//  <p>And a short description</p>
+// </a>
+//
+// Styleguide 2.2
+
+.test {
+  border: 1px solid black;
+  display: inline-block;
+}
+
+.test--rounded {
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.test--aggressive {
+  border-color: $color-alert;
+  border-width: 5px;
+}
